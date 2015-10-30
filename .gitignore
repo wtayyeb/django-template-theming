@@ -1,0 +1,17 @@
+*.pyc
+*.pyo
+*.mo
+*.db
+*.egg-info/
+*.egg/
+.settings/
+.idea/
+.tox/
+build/
+dist/
+docs/_build/
+htmlcov/
+
+.coverage
+.project
+.pydevproject
