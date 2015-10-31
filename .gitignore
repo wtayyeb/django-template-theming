@@ -15,3 +15,4 @@ htmlcov/
 .coverage
 .project
 .pydevproject
+/example/db.sqlite3
