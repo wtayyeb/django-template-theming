@@ -9,12 +9,13 @@ import logging
 import os
 
 from django.conf import settings
-from django.contrib.sites.models import Site
+from django.contrib.sites.models import Site, SITE_CACHE
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _  # @UnusedImport
 
 from . import confs  # to set default confs  @UnusedImport - do not remove
+from .threadlocals import get_thread_variable
 
 
 logger = logging.getLogger(__name__)
@@ -53,8 +54,12 @@ class ThemeManager(object):
 
 
     def get_current_theme(self):
-        CURRENT_THEME = 'Undefined'
-        return self._themes[CURRENT_THEME]
+        sitetheme = get_thread_variable('sitetheme')
+        if sitetheme is None:
+            theme = self.get_theme(settings.THEMING_DEFAULT_THEME)
+        else:
+            theme = sitetheme.theme
+        return theme
 
 
     def get_theme(self, theme_slug):
@@ -67,6 +72,7 @@ thememanager = ThemeManager()
 
 
 
+@python_2_unicode_compatible
 class Theme(object):
     _metadata_filename = 'metadata.json'
 
@@ -107,6 +113,11 @@ class Theme(object):
         return val
 
 
+    def __str__(self, *args, **kwargs):
+        return '<Theme `%s`>' % self.slug
+
+
+
 @python_2_unicode_compatible
 class SiteTheme(models.Model):
     site = models.OneToOneField(Site)
@@ -121,5 +132,15 @@ class SiteTheme(models.Model):
     def __str__(self):
         theme = self.theme
         return '%s : [%s] %s' % (self.site, theme.slug, theme.name)
+
+
+    def delete(self, using=None):
+        SITE_CACHE.pop(self.site.domain, None)
+        return super(SiteTheme, self).delete(using=using)
+
+
+    def save(self, *args, **kwargs):
+        SITE_CACHE.pop(self.site.domain, None)
+        return super(SiteTheme, self).save(*args, **kwargs)
 
 

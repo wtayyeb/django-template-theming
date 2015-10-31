@@ -6,13 +6,10 @@
 
 from appconf.base import AppConf
 
-import theming
-
 
 class _AppConf(AppConf):
-    VERSION = theming.__version__
+    DEFAULT_THEME = 'default'
     ROOT = 'themes'
-
 
     class Meta:
         prefix			 = "THEMING"  # explicit

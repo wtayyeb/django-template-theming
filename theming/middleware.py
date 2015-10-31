@@ -4,7 +4,8 @@
 @license: MIT
 '''
 
-from .models import ThemeManager
+from django.contrib.sites.models import Site
+
 from .threadlocals import set_thread_variable
 
 
@@ -21,12 +22,15 @@ class ThemingMiddleware(object):
     '''
 
     def process_request(self, request):
-        host = request.get_host()
-        mgr = ThemeManager()
-        mgr.set_host(host)
-        
-        # why ?
-        set_thread_variable('theme_manager', mgr)
+        try:
+            site = Site.objects._get_site_by_request(request)
+        except (Site.DoesNotExist, KeyError):
+            site = None
 
-        # why ?
-        set_thread_variable('request', request)
+        try:
+            sitetheme = site.sitetheme
+        except (AttributeError):
+            sitetheme = None
+
+        set_thread_variable('sitetheme', sitetheme)
+
