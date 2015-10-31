@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Simple App Index Page - vecto version</h2>
+    <p>
+        this is modified template file rendered from
+        <code>themes/vecto/simpleapp_index.html</code>
+    </p>
+    
+    <p>-----------------</p>
+    <h3>below is [[block.super]] </h3>
+    {{ block.super }}
+{% endblock %}
