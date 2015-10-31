@@ -27,8 +27,6 @@ Setup
 
     TEMPLATE_LOADERS += ( 'theming.template.Loader', )
 
-    TEMPLATE_CONTEXTPRO += ( 'theming.template.context_processor', )
-
 Usage
 =====
 
