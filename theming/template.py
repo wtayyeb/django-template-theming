@@ -12,7 +12,7 @@ from django.template.base import TemplateDoesNotExist
 from django.template.loaders.base import Loader as BaseLoader
 from django.utils._os import safe_join
 
-from theming.models import thememanager
+from .models import thememanager
 
 
 class Loader(BaseLoader):

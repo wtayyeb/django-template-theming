@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
             name='SiteTheme',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('theme_slug', models.CharField(max_length=100, choices=[(b'default', b'Default'), (b'responsive', 'Simple Responsive Theme'), (b'lapic', b'Lapic'), (b'vecto', b'Vecto')])),
+                ('theme_slug', models.CharField(max_length=100, choices=[(b'default', b'Default'), ])),
                 ('site', models.OneToOneField(to='sites.Site')),
             ],
         ),
