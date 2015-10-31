@@ -22,56 +22,6 @@ logger = logging.getLogger(__name__)
 
 
 
-class ThemeManager(object):
-    def __init__(self, *args, **kwargs):
-        super(ThemeManager, self).__init__(*args, **kwargs)
-
-        self._themes = None
-        self.host = None
-
-
-    def find_themes(self, force=False):
-        if self._themes is None or force:
-            self._themes = {}
-            root = settings.THEMING_ROOT
-            for dirname in os.listdir(root):
-                if not dirname.startswith('~'):
-                    self._themes[dirname] = Theme(dirname)
-
-        return self._themes
-
-
-    def get_themes_choice(self):
-        themes = self.find_themes()
-        choices = []
-        for theme in themes.values():
-            choices.append((theme.slug, theme.name))
-        return choices
-
-
-    def set_host(self, host):
-        self.host = host
-
-
-    def get_current_theme(self):
-        sitetheme = get_thread_variable('sitetheme')
-        if sitetheme is None:
-            theme = self.get_theme(settings.THEMING_DEFAULT_THEME)
-        else:
-            theme = sitetheme.theme
-        return theme
-
-
-    def get_theme(self, theme_slug):
-        self.find_themes()
-        return self._themes[theme_slug]
-
-
-
-thememanager = ThemeManager()
-
-
-
 @python_2_unicode_compatible
 class Theme(object):
     _metadata_filename = 'metadata.json'
@@ -115,6 +65,77 @@ class Theme(object):
 
     def __str__(self, *args, **kwargs):
         return '<Theme `%s`>' % self.slug
+
+
+
+class ThemeManager(object):
+    def __init__(self, *args, **kwargs):
+        super(ThemeManager, self).__init__(*args, **kwargs)
+
+        self._themes = None
+        self.host = None
+
+        self.patch_settings_staticfiles_dirs()
+
+
+    def find_themes(self, force=False):
+        if self._themes is None or force:
+            self._themes = {}
+            root = settings.THEMING_ROOT
+            for dirname in os.listdir(root):
+                if not dirname.startswith('~'):
+                    self._themes[dirname] = Theme(dirname)
+
+        return self._themes
+
+
+    def get_themes_choice(self):
+        themes = self.find_themes()
+        choices = []
+        for theme in themes.values():
+            choices.append((theme.slug, theme.name))
+        return choices
+
+
+    def set_host(self, host):
+        self.host = host
+
+
+    def get_current_theme(self):
+        sitetheme = get_thread_variable('sitetheme')
+        if sitetheme is None:
+            theme = self.get_theme(settings.THEMING_DEFAULT_THEME)
+        else:
+            theme = sitetheme.theme
+        return theme
+
+
+    def get_theme(self, theme_slug):
+        self.find_themes()
+        return self._themes[theme_slug]
+
+
+    def patch_settings_staticfiles_dirs(self):
+        staticfiles_dirs = []
+        for theme_slug in self.find_themes():
+            real_path = os.path.join(settings.THEMING_ROOT, '%s/static' % theme_slug)
+            if os.path.isdir(real_path):
+                key = os.path.join(settings.THEMING_URL, theme_slug)
+                staticfiles_dirs.append((key, real_path))
+                if os.name == 'nt':     # hack for windows
+                    staticfiles_dirs.append((key.replace('/', '\\'), real_path))
+            else:
+                logger.debug('theme `%s` not found.' % theme_slug)
+
+        PRE_STATICFILES_DIRS = getattr(settings, 'PRE_STATICFILES_DIRS', None)
+        if PRE_STATICFILES_DIRS is None:
+            PRE_STATICFILES_DIRS = settings.STATICFILES_DIRS
+            setattr(settings, 'PRE_STATICFILES_DIRS', PRE_STATICFILES_DIRS)
+
+        settings.STATICFILES_DIRS = PRE_STATICFILES_DIRS + tuple(staticfiles_dirs)
+
+
+thememanager = ThemeManager()
 
 
 
