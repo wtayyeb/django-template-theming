@@ -1,90 +1,125 @@
 # -*- coding:utf-8 -*-
 '''
-@author: Wasim
+@author: wTayyeb  https://github.com/wtayyeb
 @license: MIT
 '''
 
 import json
+import logging
 import os
 
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.translation import ugettext_lazy as _  # @UnusedImport
+
+from . import confs  # to set default confs  @UnusedImport - do not remove
 
 
-@python_2_unicode_compatible
-class Theme(models.Model):
-	title		 = models.CharField(max_length=100)
-	slug		 = models.CharField(max_length=50)
-
-	def __str__(self):
-		return self.title
-
-
-	class Meta:
-		verbose_name		 = _('Theme')
-		verbose_name_plural	 = _('Themes')
-
-
-
-@python_2_unicode_compatible
-class SiteTheme(models.Model):
-	site		 = models.ForeignKey(Site)
-	theme		 = models.ForeignKey(Theme)
-
-	def __str__(self):
-		return '%s - %s' % (self.site, self.theme)
-
-
-	class Meta:
-		verbose_name		 = _('SiteTheme')
-		verbose_name_plural	 = _('SiteThemes')
+logger = logging.getLogger(__name__)
 
 
 
 class ThemeManager(object):
+    def __init__(self, *args, **kwargs):
+        super(ThemeManager, self).__init__(*args, **kwargs)
 
-	_metadata = 'metadata.json'
+        self._themes = None
+        self.host = None
 
-	def __init__(self):
-		self.theme_root = getattr(settings, 'THEME_ROOT', None)
-		self.theme_default = getattr(settings, 'DEFAULT_THEME', 'default')
-		self.themes = {}
 
-	def add_theme(self, theme):
-		if type(theme) is Theme:
-			self.themes.update({theme.slug: theme})
+    def find_themes(self, force=False):
+        if self._themes is None or force:
+            self._themes = {}
+            root = settings.THEMING_ROOT
+            for dirname in os.listdir(root):
+                if not dirname.startswith('~'):
+                    self._themes[dirname] = Theme(dirname)
 
-	def get_theme(self, slug):
-		try:
-			if self.theme_root:
-				metadata_path = os.path.join(
-					self.theme_root, slug, self._metadata
-				)
-				with open(metadata_path, 'r') as metadata:
-					theme = json.load(metadata)
-					return Theme(**theme)
-			else:
-				raise Exception('THEME_ROOT is not defined')
-		except IOError as e:
-			raise Exception(e)
+        return self._themes
 
-	def get_default(self):
-		return self.get_theme(self.theme_default)
 
-	def search_themes(self):
-		try:
-			if self.theme_root:
-				for (root, dirs, names) in os.walk(self.theme_root):
-					if self._metadata in names:
-						root_metadata = os.path.join(root, self._metadata)
-						with open(root_metadata, 'r') as metadata:
-							theme = json.load(metadata)
-							theme_obj = Theme(**theme)
-							self.add_theme(theme_obj)
-				return self.themes
-			else:
-				raise Exception('THEME_ROOT is not defined')
-		except IOError:
-			raise Exception('Metadata is malformed')
+    def get_themes_choice(self):
+        themes = self.find_themes()
+        choices = []
+        for theme in themes.values():
+            choices.append((theme.slug, theme.name))
+        return choices
+
+
+    def set_host(self, host):
+        self.host = host
+
+
+    def get_current_theme(self):
+        CURRENT_THEME = 'Undefined'
+        return self._themes[CURRENT_THEME]
+
+
+    def get_theme(self, theme_slug):
+        self.find_themes()
+        return self._themes[theme_slug]
+
+
+
+thememanager = ThemeManager()
+
+
+
+class Theme(object):
+    _metadata_filename = 'metadata.json'
+
+    def __init__(self, slug, *args, **kwargs):
+        super(Theme, self).__init__(*args, **kwargs)
+
+        self.slug = slug
+        self._metadata = {}
+        self.metadata_ready = None
+
+
+    def read_metadata(self):
+        filename = os.path.join(settings.THEMING_ROOT, self.slug, self._metadata_filename)
+        try:
+            with open(filename, 'r') as f:
+                self._metadata = json.load(f)
+                self.metadata_ready = True
+        except IOError:
+            self._metadata = {}
+            self.metadata_ready = False
+
+
+    def __getattr__(self, key):
+        if key not in ('name', 'description', 'author', 'version'):
+            raise AttributeError
+
+        if self.metadata_ready is None:
+            self.read_metadata()
+
+        if self.metadata_ready is False:
+            logger.debug('theme %s have no metadata or its metadata is not a valid json' % self.slug)
+
+        val = self._metadata.get(key)
+
+        if val is None and key is 'name':
+            val = self.slug.title()
+
+        return val
+
+
+@python_2_unicode_compatible
+class SiteTheme(models.Model):
+    site = models.OneToOneField(Site)
+    theme_slug = models.CharField(max_length=100, choices=thememanager.get_themes_choice())
+
+
+    @property
+    def theme(self):
+        return thememanager.get_theme(self.theme_slug)
+
+
+    def __str__(self):
+        theme = self.theme
+        return '%s : [%s] %s' % (self.site, theme.slug, theme.name)
+
+
