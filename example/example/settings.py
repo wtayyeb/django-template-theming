@@ -68,8 +68,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
             ],
             'loaders': (
-                # List of callables that know how to import templates from various sources.
-#                 'theming.Loader',
+                'theming.template.Loader',
                 'django.template.loaders.filesystem.Loader',
                 'django.template.loaders.app_directories.Loader',
             ),
