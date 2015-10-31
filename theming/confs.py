@@ -1,8 +1,7 @@
 # -*- coding:utf-8 -*-
 '''
-Created on Oct 31, 2015
-
-@author: Wasim
+@author: wTayyeb  https://github.com/wtayyeb
+@license: MIT
 '''
 
 from appconf.base import AppConf
@@ -11,8 +10,9 @@ import theming
 
 
 class _AppConf(AppConf):
-    VERSION 			 = theming.__version__
-    ROOT           = 'themes'  # Relative to settings.BASE_ROOT
+    VERSION = theming.__version__
+    ROOT = 'themes'
+
 
     class Meta:
         prefix			 = "THEMING"  # explicit
