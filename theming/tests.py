@@ -4,6 +4,8 @@
 @license: MIT
 '''
 
+import django
+from django.http.response import HttpResponseRedirect
 from django.test import TestCase
 from django.test.client import RequestFactory
 
@@ -11,9 +13,12 @@ from .middleware import ThemingMiddleware
 from .models import ThemeManager
 from .template import Loader
 from .threadlocals import get_thread_variable
-from django.http.response import HttpResponseRedirect
-from theming.views import redirect_to_theme_fav_icon
-from django.template.engine import Engine
+from .views import redirect_to_theme_fav_icon
+
+try:
+    from django.template.engine import Engine
+except ImportError:
+    Engine = None
 
 
 class Test(TestCase):
@@ -48,7 +53,11 @@ class Test(TestCase):
 
 
     def test_template(self):
-        loader = Loader(Engine())
+        if django.VERSION >= (1, 8):
+            loader = Loader(Engine())
+        else:
+            loader = Loader()
+
         res = list(loader.get_template_sources('base.html'))
         self.assertGreaterEqual(len(res), 1)
 

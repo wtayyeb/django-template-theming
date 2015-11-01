@@ -4,7 +4,7 @@
 @license: MIT
 '''
 
-from django.contrib.sites.models import Site
+from django.contrib.sites.models import Site, SITE_CACHE
 
 from .threadlocals import set_thread_variable
 
@@ -23,7 +23,14 @@ class ThemingMiddleware(object):
 
     def process_request(self, request):
         try:
-            site = Site.objects._get_site_by_request(request)
+            # site = Site.objects._get_site_by_request(request)  # django 1.8+
+
+            host = request.get_host()
+            if host not in SITE_CACHE:
+                site = Site.objects.get(domain__iexact=host)
+                SITE_CACHE[host] = site
+            site = SITE_CACHE[host]
+
         except (Site.DoesNotExist, KeyError):
             site = None
 

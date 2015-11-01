@@ -7,12 +7,22 @@
 import io
 
 from django.conf import settings
-from django.core.exceptions import SuspiciousFileOperation
-from django.template.base import TemplateDoesNotExist
-from django.template.loaders.base import Loader as BaseLoader
+from django.template import TemplateDoesNotExist
 from django.utils._os import safe_join
 
 from .models import thememanager
+
+
+try:
+    from django.core.exceptions import SuspiciousFileOperation
+except ImportError:
+    from django.core.exceptions import SuspiciousOperation as SuspiciousFileOperation
+
+try:
+    from django.template.loaders.base import Loader as BaseLoader
+except ImportError:
+    from django.template.loader import BaseLoader
+
 
 
 class Loader(BaseLoader):

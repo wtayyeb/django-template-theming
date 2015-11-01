@@ -128,7 +128,7 @@ class ThemeManager(object):
             PRE_STATICFILES_DIRS = settings.STATICFILES_DIRS
             setattr(settings, 'PRE_STATICFILES_DIRS', PRE_STATICFILES_DIRS)
 
-        settings.STATICFILES_DIRS = PRE_STATICFILES_DIRS + tuple(staticfiles_dirs)
+        settings.STATICFILES_DIRS = tuple(PRE_STATICFILES_DIRS) + tuple(staticfiles_dirs)
 
 
 thememanager = ThemeManager()
