@@ -1,52 +1,41 @@
 sudo: false
 language: python
-
-python:
-  - "2.7"
-
 env:
-  - TOX_ENV=py27-dj16
-  - TOX_ENV=py27-dj17
-  - TOX_ENV=py27-dj18
-  - TOX_ENV=py27-dj19
-  - TOX_ENV=py27-djdev
+#  - TOXENV=py27-dj16
+#  - TOXENV=py27-dj17
+  - TOXENV=py27-dj18
+  - TOXENV=py27-dj19
 
-  - TOX_ENV=py32-dj16
-  - TOX_ENV=py32-dj17
-  - TOX_ENV=py32-dj18
-
-  - TOX_ENV=py33-dj16
-  - TOX_ENV=py33-dj17
-  - TOX_ENV=py33-dj18
-  
-  - TOX_ENV=py34-dj17
-  - TOX_ENV=py34-dj18
-  - TOX_ENV=py34-dj19
-  - TOX_ENV=py34-djdev
-
-  - TOX_ENV=py35-dj19
-  - TOX_ENV=py35-djdev
-
-install:
-  - pip install --upgrade pip tox coverage
+#  - TOXENV=py27-djdev
+#  - TOXENV=py32-dj16
+#  - TOXENV=py32-dj17
+  - TOXENV=py32-dj18
+#  - TOXENV=py33-dj16
+#  - TOXENV=py33-dj17
+#  - TOXENV=py33-dj18
+#  - TOXENV=py34-dj17
+#  - TOXENV=py34-dj18
+#  - TOXENV=py34-dj19
+#  - TOXENV=py34-djdev
+#  - TOXENV=py35-dj19
+#  - TOXENV=py35-djdev
 
 matrix:
   fast_finish: true
   allow_failures:
-    - env: TOX_ENV="py32-dj16"
-    - env: TOX_ENV="py32-dj17"
-    - env: TOX_ENV="py32-dj18"
-    
-    - env: TOX_ENV="py27-djdev"
-    - env: TOX_ENV="py34-djdev"
-    - env: TOX_ENV="py35-djdev"
+    - env: TOXENV="py27-djdev"
+    - env: TOXENV="py32-dj16"
+    - env: TOXENV="py32-dj17"
+    - env: TOXENV="py32-dj18"
+    - env: TOXENV="py34-djdev"
+    - env: TOXENV="py35-djdev"
+
+install:
+# - pip install --upgrade pip tox
+  - pip install tox
 
 script:
-  - tox -e $TOX_ENV
-
-#after_success:
-#  - pip install coveralls==0.2
-#  - coveralls
+  - tox
 
 branches:
   only:
