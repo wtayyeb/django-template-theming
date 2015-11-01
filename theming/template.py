@@ -56,7 +56,8 @@ class Loader(BaseLoader):
         tried = []
         for filepath in self.get_template_sources(template_name, template_dirs):
             try:
-                with io.open(filepath, encoding=self.engine.file_charset) as fp:
+                encoding = self.engine.file_charset if self.engine else 'utf-8'
+                with io.open(filepath, encoding=encoding) as fp:
                     return fp.read(), filepath
             except IOError:
                 tried.append(filepath)
