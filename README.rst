@@ -1,6 +1,9 @@
 Django Template Theming
 ***********************
 
+.. image:: https://travis-ci.org/wtayyeb/django-template-theming.svg?branch=master
+    :target: https://travis-ci.org/wtayyeb/django-template-theming
+
 Django application, implement theming concept for templates, flexible and configurable from admin interface.
 
 Installation
