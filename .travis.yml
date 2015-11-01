@@ -1,0 +1,48 @@
+language: python
+python:
+  - "2.7"
+
+  - "3.2"
+  - "3.3"
+  - "3.4"
+  - "3.5"
+
+env:
+  - DJANGO=">=1.6,<1.7"
+  - DJANGO=">=1.7,<1.8"
+  - DJANGO=">=1.8,<1.9"
+  - DJANGO=">=1.9a1,<2.0"
+
+install:
+  - pip install --upgrade pip
+  - pip install django$DJANGO coverage django-appconf
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - env: DJANGO=">=1.6,<1.7"
+    - env: DJANGO=">=1.9a1,<2.0"
+
+  exclude:
+  - python: "3.2"
+    env: DJANGO=">=1.9a1,<2.0"
+  - python: "3.3"
+    env: DJANGO=">=1.9a1,<2.0"
+  - python: "3.4"
+    env: DJANGO=">=1.6,<1.7"
+  - python: "3.5"
+    env: DJANGO=">=1.6,<1.7"
+    env: DJANGO=">=1.7,<1.8"
+    env: DJANGO=">=1.8,<1.9"
+    
+script:
+  - coverage run --source=theming runtests.py
+  - coverage report -m
+
+after_success:
+  - pip install coveralls==0.2
+  - coveralls
+
+branches:
+  only:
+    - master
