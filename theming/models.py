@@ -97,16 +97,12 @@ class ThemeManager(object):
         return choices
 
 
-    def set_host(self, host):
-        self.host = host
-
-
     def get_current_theme(self):
         sitetheme = get_thread_variable('sitetheme')
-        if sitetheme is None:
-            theme = self.get_theme(settings.THEMING_DEFAULT_THEME)
-        else:
+        if sitetheme:
             theme = sitetheme.theme
+        else:
+            theme = self.get_theme(settings.THEMING_DEFAULT_THEME)
         return theme
 
 
