@@ -15,6 +15,7 @@ from .template import Loader
 from .threadlocals import get_thread_variable
 from .views import redirect_to_theme_fav_icon
 
+
 try:
     from django.template.engine import Engine
 except ImportError:
