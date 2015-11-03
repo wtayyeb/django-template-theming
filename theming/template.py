@@ -5,12 +5,14 @@
 '''
 
 import io
+import os
 
 from django.conf import settings
 from django.template import TemplateDoesNotExist
 from django.utils._os import safe_join
 
 from .models import thememanager
+from django.templatetags.static import static
 
 
 try:
@@ -67,5 +69,15 @@ class Loader(BaseLoader):
             error_msg = "Your TEMPLATE_DIRS setting is empty. Change it to point to at least one template directory."
         raise TemplateDoesNotExist(error_msg)
     load_template_source.is_usable = True
+
+
+
+def context_processor(request):
+    ''' theming template context processor '''
+    theme = thememanager.get_current_theme()
+    theme_url = static(os.path.join(settings.THEMING_URL, theme.slug)).replace('\\', '/')
+    return {
+        'theme_url': theme_url,
+    }
 
 
