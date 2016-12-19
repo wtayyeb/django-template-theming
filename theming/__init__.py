@@ -5,6 +5,6 @@
 '''
 
 
-VERSION = (0, 7, 5)
+VERSION = (0, 7, 6)
 
 __version__ = '.'.join((str(i) for i in VERSION))

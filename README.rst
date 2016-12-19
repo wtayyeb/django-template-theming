@@ -21,6 +21,8 @@ Setup
 1. Add 'theming' to ``INSTALLED_APPS``: ::
 
     INSTALLED_APPS += ( 'theming', )
+    
+    if using django-compressor make sure put theming before compressor
 
 2. Add 'theming.middleware.ThemingMiddleware' to ``MIDDLEWARE_CLASSES``: ::
 
