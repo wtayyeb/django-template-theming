@@ -1,38 +1,27 @@
 sudo: false
 language: python
 env:
-  - TOXENV=py27-dj16
-  - TOXENV=py27-dj17
-  - TOXENV=py27-dj18
-  - TOXENV=py27-dj19
-  - TOXENV=py27-djdev
+  - TOXENV=py27-dj1.8
+  - TOXENV=py27-dj1.9
+  - TOXENV=py27-dj1.10
+  - TOXENV=py27-dj.dev
 
-  - TOXENV=py32-dj16
-  - TOXENV=py32-dj17
-  - TOXENV=py32-dj18
+  - TOXENV=py34-dj1.8
+  - TOXENV=py34-dj1.9
+  - TOXENV=py34-dj1.10
+  - TOXENV=py34-dj.dev
 
-  - TOXENV=py33-dj16
-  - TOXENV=py33-dj17
-  - TOXENV=py33-dj18
-
-  - TOXENV=py34-dj17
-  - TOXENV=py34-dj18
-  - TOXENV=py34-dj19
-  - TOXENV=py34-djdev
-
-  - TOXENV=py35-dj19
-  - TOXENV=py35-djdev
+  - TOXENV=py35-dj1.9
+  - TOXENV=py35-dj1.10
+  - TOXENV=py35-dj.dev
 
 matrix:
   fast_finish: true
   allow_failures:
-    - env: TOXENV="py27-djdev"
-    - env: TOXENV="py32-dj16"
-    - env: TOXENV="py32-dj17"
-    - env: TOXENV="py32-dj18"
-    - env: TOXENV="py34-djdev"
-    - env: TOXENV="py35-dj19"
-    - env: TOXENV="py35-djdev"
+    - env: TOXENV="py27-dj.dev"
+    - env: TOXENV="py34-dj.dev"
+    - env: TOXENV="py35-dj1.9"
+    - env: TOXENV="py35-dj.dev"
 
 install:
   - pip install --upgrade pip tox
