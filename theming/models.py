@@ -1,8 +1,8 @@
 # -*- coding:utf-8 -*-
-'''
+"""
 @author: wTayyeb  https://github.com/wtayyeb
 @license: MIT
-'''
+"""
 
 import json
 import logging
@@ -67,8 +67,6 @@ class ThemeManager(object):
         self._themes = None
         self.host = None
 
-        self.patch_settings_staticfiles_dirs()
-
     def find_themes(self, force=False):
         if self._themes is None or force:
             self._themes = {}
@@ -76,7 +74,6 @@ class ThemeManager(object):
             for dirname in os.listdir(root):
                 if not dirname.startswith('~'):
                     self._themes[dirname] = Theme(dirname)
-
         return self._themes
 
     def get_themes_choice(self):
@@ -97,25 +94,6 @@ class ThemeManager(object):
     def get_theme(self, theme_slug):
         self.find_themes()
         return self._themes[theme_slug]
-
-    def patch_settings_staticfiles_dirs(self):
-        staticfiles_dirs = []
-        for theme_slug in self.find_themes():
-            real_path = os.path.join(settings.THEMING_ROOT, theme_slug, 'static')
-            if os.path.isdir(real_path):
-                key = os.path.join(settings.THEMING_ROOT, theme_slug)
-                staticfiles_dirs.append((key, real_path))
-                if os.name == 'nt':  # hack for windows
-                    staticfiles_dirs.append((key.replace('/', '\\'), real_path))
-            else:
-                logger.debug('theme `%s` not found.' % theme_slug)
-
-        PRE_STATICFILES_DIRS = getattr(settings, 'PRE_STATICFILES_DIRS', None)
-        if PRE_STATICFILES_DIRS is None:
-            PRE_STATICFILES_DIRS = settings.STATICFILES_DIRS
-            setattr(settings, 'PRE_STATICFILES_DIRS', PRE_STATICFILES_DIRS)
-
-        settings.STATICFILES_DIRS = tuple(PRE_STATICFILES_DIRS) + tuple(staticfiles_dirs)
 
 
 thememanager = ThemeManager()
