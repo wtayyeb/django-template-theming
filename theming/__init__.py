@@ -7,7 +7,7 @@
 from django.apps import AppConfig
 from django.conf import settings
 
-VERSION = (0, 7, 8)
+VERSION = (0, 7, 9)
 __version__ = '.'.join((str(i) for i in VERSION))
 default_app_config = __name__ + '.App'
 

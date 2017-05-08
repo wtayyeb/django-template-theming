@@ -1,11 +1,10 @@
 # -*- coding:utf-8 -*-
-'''
+"""
 @author: wTayyeb  https://github.com/wtayyeb
 @license: MIT
-'''
+"""
 
 import io
-import os
 
 from django.conf import settings
 from django.template import TemplateDoesNotExist
@@ -67,9 +66,11 @@ class Loader(BaseLoader):
 
 
 def context_processor(request):
-    ''' theming template context processor '''
+    """ theming template context processor """
     theme = thememanager.get_current_theme()
-    theme_url = static(os.path.join(settings.THEMING_URL, theme.slug)).replace('\\', '/')
+    theme_url = settings.THEMING_URL
+    theme_url += '/' if theme_url[-1] != '/' else ''
+    theme_url = static(theme_url + theme.slug).replace('\\', '/')
     sitetheme = get_thread_variable('sitetheme')
     return {
         'theme_url': theme_url,

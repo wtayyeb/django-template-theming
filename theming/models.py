@@ -101,9 +101,9 @@ class ThemeManager(object):
     def patch_settings_staticfiles_dirs(self):
         staticfiles_dirs = []
         for theme_slug in self.find_themes():
-            real_path = os.path.join(settings.THEMING_ROOT, '%s/static' % theme_slug)
+            real_path = os.path.join(settings.THEMING_ROOT, theme_slug, 'static')
             if os.path.isdir(real_path):
-                key = os.path.join(settings.THEMING_URL, theme_slug)
+                key = os.path.join(settings.THEMING_ROOT, theme_slug)
                 staticfiles_dirs.append((key, real_path))
                 if os.name == 'nt':  # hack for windows
                     staticfiles_dirs.append((key.replace('/', '\\'), real_path))
