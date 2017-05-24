@@ -5,13 +5,11 @@ Created on Nov 22, 2016
 @author: Wasim
 """
 
-from optparse import make_option
 from urlparse import urlparse
 
 from compressor.management.commands.compress import Command as CompressorCommand
 from django.contrib.auth.models import User
 from django.test.client import RequestFactory
-
 from theming.middleware import ThemingMiddleware
 from theming.models import SiteTheme
 from theming.threadlocals import set_thread_variable, get_thread_variable
@@ -20,10 +18,10 @@ from theming.threadlocals import set_thread_variable, get_thread_variable
 class Command(CompressorCommand):
     help = 'override compress command to let themes get effect'
 
-    option_list = CompressorCommand.option_list + (
-        make_option('--base-url', '-b', action='store', dest='base_url', default=None,
-            help='just compress for given base_url'),
-    )
+    def add_arguments(self, parser):
+        super(Command, self).add_arguments(parser)
+        parser.add_argument('--base-url', '-b', action='store', dest='base_url', default=None,
+                            help='just compress for given base_url')
 
     def handle(self, *args, **options):
         base_url = options.get('base_url')
@@ -45,7 +43,6 @@ class Command(CompressorCommand):
             ThemingMiddleware().process_request(request)
             sitetheme = get_thread_variable('sitetheme')
             all_sitethemes = [sitetheme, ]
-
 
         for sitetheme in all_sitethemes:
             if sitetheme is None:
