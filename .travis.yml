@@ -24,7 +24,7 @@ matrix:
     - env: TOXENV="py35-dj.dev"
 
 install:
-  - pip install --upgrade pip tox
+  - pip install --upgrade pip tox django
 
 script:
   - tox
