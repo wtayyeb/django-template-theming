@@ -20,13 +20,13 @@ class Command(CompressorCommand):
 
     def add_arguments(self, parser):
         super(Command, self).add_arguments(parser)
-        parser.add_argument('--base-url', '-b', action='store', dest='base_url', default=None,
+        parser.add_argument('--base-url', '-b', action='store', dest='base_url', default='',
                             help='just compress for given base_url')
 
     def handle(self, *args, **options):
-        base_url = options.get('base_url')
+        base_url = options.get('base_url', '')
 
-        if base_url is None:
+        if base_url is '':
             all_sitethemes = SiteTheme.objects.all()
 
         else:
